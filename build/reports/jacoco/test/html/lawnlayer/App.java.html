@@ -1,0 +1,669 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>App.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">lawnlayer</a> &gt; <a href="index.source.html" class="el_package">lawnlayer</a> &gt; <span class="el_source">App.java</span></div><h1>App.java</h1><pre class="source lang-java linenums">package lawnlayer;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.*;
+
+import javax.management.RuntimeErrorException;
+
+import org.checkerframework.checker.units.qual.A;
+import processing.core.PApplet;
+import processing.core.PImage;
+import processing.data.JSONObject;
+import processing.data.JSONArray;
+import processing.core.PFont;
+
+public class App extends PApplet {
+
+    public static final int WIDTH = 1280;
+    public static final int HEIGHT = 720;
+    public static final int SPRITESIZE = 20;
+    public static final int TOPBAR = 80;
+
+    public static final int FPS = 60;
+
+    public String configPath;
+
+    public int lives;
+    public JSONArray levels;
+
+    /**
+     * The JSON array of enemies from each level
+    */
+    public JSONArray enemiesJson;
+    public float goal;
+
+    /**
+     * The Level index of the current level
+    */
+    public int levelIndex;
+
+    /**
+     * The total no of levels
+    */
+    public int noofLevels;
+
+    /**
+     * The percentage area covered by the grass
+    */
+    public double completed;
+	
+	public PImage grass;
+    public PImage concrete;
+    public PImage pathGreen;
+    public PImage pathRed;
+    public PImage powerup1;
+    public PImage powerup2;
+
+    /**
+     * If the powerup is in the  map or not
+    */
+    public boolean powerup1Enabled;
+    public boolean powerup2Enabled;
+
+    /**
+     * If the powerup is collected by the player
+    */
+    public static boolean powerup1Actived;
+    public static boolean powerup2Actived;
+
+    /**
+     * The powerup time left
+    */
+<span class="fc" id="L74">    public static int powerup1Timer = 10*App.FPS;</span>
+<span class="fc" id="L75">    public static int powerup2Timer = 10*App.FPS;</span>
+    
+    public Ball ball;
+
+    /**
+     * The list of enemies in the current level
+    */
+<span class="fc" id="L82">    public List&lt;Enemies&gt; enemies = new ArrayList&lt;&gt;();</span>
+
+    /**
+     * The list of xy coordinates of the green trail block
+    */
+<span class="fc" id="L87">    public List&lt;int[]&gt; greenTrailList = new ArrayList&lt;&gt;();</span>
+
+    /** 
+     * The map is stored in this 2-d array
+    */
+    public static String[][] map;
+
+    /**
+     * A new map just for the flood fill
+    */
+    public static String[][] mapNew;
+
+    /**
+     * Checks if we should change the greentrail into grass
+    */
+    public boolean clearPath;
+
+    /** 
+     * Checks if we need to remove the greentrail as the player died
+    */ 
+    public boolean clearPathDead;
+
+    /**
+     *  Checks if the enemy touched the tral
+    */
+    public boolean changeTile;
+
+    /**
+     *  Which index to start changing the greentrail from
+    */
+    public int changeTileIndex;
+
+<span class="fc" id="L119">    public int timer = 0;</span>
+
+    public PFont font;
+
+<span class="fc" id="L123">    public App() {</span>
+<span class="fc" id="L124">        this.configPath = &quot;config.json&quot;;</span>
+<span class="fc" id="L125">        this.ball = new Ball();</span>
+<span class="fc" id="L126">        map = new String[32][64];</span>
+<span class="fc" id="L127">    }</span>
+
+    /**
+     * Initialise the setting of the window size.
+    */
+    public void settings() {
+<span class="fc" id="L133">        size(WIDTH, HEIGHT);</span>
+<span class="fc" id="L134">    }</span>
+
+    /**
+     * Load all resources such as images. Initialise the elements such as the player, enemies and map elements.
+     * Also read in the Json file and create the font.
+    */
+    public void setup() {
+<span class="fc" id="L141">        frameRate(FPS);</span>
+
+        // Load images during setup
+<span class="fc" id="L144">		this.grass = loadImage(this.getClass().getResource(&quot;grass.png&quot;).getPath());</span>
+<span class="fc" id="L145">        this.concrete = loadImage(this.getClass().getResource(&quot;concrete_tile.png&quot;).getPath());</span>
+<span class="fc" id="L146">        this.pathGreen = loadImage(this.getClass().getResource(&quot;path_green.png&quot;).getPath());</span>
+<span class="fc" id="L147">        this.pathRed = loadImage(this.getClass().getResource(&quot;path_red.png&quot;).getPath());</span>
+<span class="fc" id="L148">        this.powerup1 = loadImage(this.getClass().getResource(&quot;powerup1.png&quot;).getPath());</span>
+<span class="fc" id="L149">        this.powerup2 = loadImage(this.getClass().getResource(&quot;pokeball.png&quot;).getPath());</span>
+
+
+        try{
+<span class="fc" id="L153">            JSONObject configFile = new JSONObject(new FileReader(this.configPath));</span>
+<span class="fc" id="L154">            this.lives = (int) configFile.getInt(&quot;lives&quot;);</span>
+<span class="fc" id="L155">            this.levels = configFile.getJSONArray(&quot;levels&quot;);</span>
+<span class="fc" id="L156">            this.noofLevels = this.levels.size();</span>
+        }
+<span class="nc" id="L158">        catch (FileNotFoundException e){</span>
+<span class="nc" id="L159">            e.printStackTrace();</span>
+<span class="fc" id="L160">        }</span>
+
+        // Reading the file
+<span class="fc" id="L163">        this.readFile();</span>
+
+<span class="fc" id="L165">        this.ball.setSprite(loadImage(this.getClass().getResource(&quot;ball.png&quot;).getPath()));</span>
+
+<span class="fc" id="L167">        font = createFont(&quot;PTSans-Regular&quot;, 100);</span>
+        
+<span class="fc" id="L169">    }</span>
+
+    /**
+     * The current level elements is determined from the JSON file and loaded in.
+    */
+    public void readFile(){
+<span class="fc" id="L175">        this.goal = this.levels.getJSONObject(this.levelIndex).getFloat(&quot;goal&quot;);</span>
+
+<span class="fc" id="L177">        this.enemiesJson = this.levels.getJSONObject(this.levelIndex).getJSONArray(&quot;enemies&quot;);</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">        for (int i = 0; i&lt;this.enemiesJson.size(); i++){</span>
+<span class="fc" id="L179">            int[] therandomlocations = this.pickRandomLocation();</span>
+<span class="fc" id="L180">            int x = therandomlocations[0];</span>
+<span class="fc" id="L181">            int y = therandomlocations[1];</span>
+<span class="pc bpc" id="L182" title="1 of 2 branches missed.">            if (!this.enemiesJson.getJSONObject(i).getString(&quot;spawn&quot;).equals(&quot;random&quot;)){</span>
+<span class="nc" id="L183">                String[] xy = this.enemiesJson.getJSONObject(i).getString(&quot;spawn&quot;).split(&quot;,&quot;);</span>
+<span class="nc" id="L184">                x = Integer.parseInt(xy[0]);</span>
+<span class="nc" id="L185">                y = Integer.parseInt(xy[1]);</span>
+            }
+<span class="fc bfc" id="L187" title="All 2 branches covered.">            if (this.enemiesJson.getJSONObject(i).getInt(&quot;type&quot;) == 0){</span>
+<span class="fc" id="L188">                this.enemies.add( new Worm(x,y));</span>
+<span class="fc" id="L189">                this.enemies.get(i).setSprite(loadImage(this.getClass().getResource(&quot;worm.png&quot;).getPath()));</span>
+            }
+            else{
+<span class="fc" id="L192">                this.enemies.add( new Beetle(x,y));</span>
+<span class="fc" id="L193">                this.enemies.get(i).setSprite(loadImage(this.getClass().getResource(&quot;beetle.png&quot;).getPath()));</span>
+            }
+        }
+
+<span class="fc" id="L197">        File f = new File(this.levels.getJSONObject(this.levelIndex).getString(&quot;outlay&quot;));</span>
+        try{
+<span class="fc" id="L199">            Scanner scan = new Scanner(f);</span>
+<span class="fc" id="L200">            int x = 0;</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">            while (scan.hasNext()){</span>
+<span class="fc" id="L202">                String eachLine = scan.nextLine();</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">                for (int i = 0; i&lt;eachLine.length(); i++){</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">                if (eachLine.charAt(i) == 'X'){</span>
+<span class="fc" id="L205">                    map[x][i] =  &quot;X&quot;;</span>
+                    }
+                }
+<span class="fc" id="L208">                x++;</span>
+<span class="fc" id="L209">            }</span>
+<span class="fc" id="L210">            scan.close();</span>
+<span class="nc" id="L211">        } catch (FileNotFoundException e){</span>
+<span class="nc" id="L212">            e.printStackTrace();</span>
+<span class="nc" id="L213">            throw new RuntimeErrorException(null);</span>
+<span class="fc" id="L214">        }</span>
+
+<span class="fc" id="L216">    }</span>
+	
+    /**
+     * Draw all elements in the game by current frame. 
+    */
+    public void draw() {
+
+        // Removing the previous frame
+<span class="fc" id="L224">        this.rect(-1, -1, WIDTH, HEIGHT);</span>
+
+        // Setting the background color
+<span class="fc" id="L227">        background(97, 59, 26);</span>
+
+        // Incrementing the timer
+<span class="fc" id="L230">        this.timer++;</span>
+
+<span class="pc bpc" id="L232" title="2 of 4 branches missed.">        if (this.lives &gt;0 &amp;&amp; this.levelIndex &lt; this.noofLevels){</span>
+
+
+<span class="fc" id="L235">            powerup1();</span>
+
+<span class="fc" id="L237">            powerup2();</span>
+
+            // Drawing the map
+            // “X” = concrete
+            // “O” = Green Trail
+            // “R” = Red Trail
+            // “G” = Grass
+            // “P1” = Power Up 1
+            // “P2” = Power Up 2
+<span class="fc" id="L246">            double denominator = 2048;</span>
+<span class="fc" id="L247">            double numerator = 0;</span>
+<span class="fc" id="L248">            double[] fraction = this.mapDraw();</span>
+<span class="fc" id="L249">            numerator = fraction[0];</span>
+<span class="fc" id="L250">            denominator = fraction[1];</span>
+
+            // Flood fill Grass
+<span class="pc bpc" id="L253" title="1 of 2 branches missed.">            if (this.clearPath){</span>
+<span class="nc" id="L254">                this.changingMapforFill();</span>
+            }
+
+            // Initializing the clear bolleans for clearing path
+<span class="fc" id="L258">            this.clearPath = false;</span>
+<span class="fc" id="L259">            this.clearPathDead = false;</span>
+
+<span class="fc" id="L261">            this.completed = (numerator/denominator) * 100;</span>
+
+            // Green Trail logic
+<span class="fc" id="L264">            int x = this.ball.getX();</span>
+<span class="fc" id="L265">            int y = this.ball.getY();</span>
+
+<span class="pc bpc" id="L267" title="2 of 4 branches missed.">            if ((x%20 == 0 &amp;&amp; y%20 == 0)){</span>
+<span class="pc bpc" id="L268" title="1 of 2 branches missed.">                if (map[(y - TOPBAR) / SPRITESIZE][x/SPRITESIZE] == &quot;O&quot;){</span>
+<span class="nc" id="L269">                    this.dead();</span>
+                }
+<span class="fc bfc" id="L271" title="All 2 branches covered.">                else if (map[(y - TOPBAR) / SPRITESIZE][x/SPRITESIZE] == null){</span>
+<span class="fc" id="L272">                    map[(y - TOPBAR) / SPRITESIZE][x/SPRITESIZE] = &quot;O&quot;;</span>
+<span class="fc" id="L273">                    int[] xy = {x/SPRITESIZE,(y - TOPBAR) / SPRITESIZE};</span>
+<span class="fc" id="L274">                    this.greenTrailList.add(xy);</span>
+<span class="fc" id="L275">                }</span>
+                else{
+<span class="fc" id="L277">                    this.clearPath = true;</span>
+<span class="fc" id="L278">                    this.changeTile = false;</span>
+<span class="fc" id="L279">                    this.changeTileIndex = 0;</span>
+<span class="fc" id="L280">                    this.greenTrailList = new ArrayList&lt;&gt;();</span>
+                }
+            }
+
+            // Enemy Movement (also checks if the enemy touches the trail)
+<span class="pc bpc" id="L285" title="1 of 2 branches missed.">            for (int i = 0; i&lt;this.enemies.size(); i++){</span>
+<span class="fc" id="L286">                int[] didItinitial = this.enemies.get(i).Collide(map);</span>
+<span class="pc bpc" id="L287" title="1 of 4 branches missed.">                if (didItinitial != null &amp;&amp; map[didItinitial[1]][didItinitial[0]] == &quot;O&quot;){</span>
+<span class="nc" id="L288">                    this.changeTile = true;</span>
+<span class="nc" id="L289">                    int[] xyz = {didItinitial[0],didItinitial[1]};</span>
+<span class="nc bnc" id="L290" title="All 2 branches missed.">                    for (int j = 0; j&lt;this.greenTrailList.size(); j++){</span>
+<span class="nc bnc" id="L291" title="All 4 branches missed.">                        if (greenTrailList.get(j)[0] == xyz[0] &amp;&amp; greenTrailList.get(j)[1] == xyz[1]){</span>
+<span class="nc" id="L292">                            this.changeTileIndex = j;</span>
+<span class="nc" id="L293">                            break;</span>
+                        }
+                    }
+<span class="nc" id="L296">                }</span>
+<span class="pc bpc" id="L297" title="3 of 6 branches missed.">                else if (didItinitial != null &amp;&amp; map[didItinitial[1]][didItinitial[0]] == &quot;G&quot; &amp;&amp; this.enemies.get(i) instanceof Beetle){</span>
+<span class="nc" id="L298">                    map[didItinitial[1]][didItinitial[0]] = null;</span>
+                }
+<span class="fc" id="L300">                this.enemies.get(i).tick();</span>
+<span class="fc" id="L301">                this.enemies.get(i).draw(this);</span>
+            }
+
+            // Change tile from green to red
+<span class="nc" id="L305">            this.changetilefromgreentored();</span>
+
+
+
+            // Ball Movement
+<span class="nc" id="L310">            this.ball.isConcrete();</span>
+<span class="nc" id="L311">            this.ball.tick();</span>
+<span class="nc" id="L312">            this.ball.draw(this);</span>
+
+            // If the player completes the level
+            // Redraw the map and other variables from the next level
+<span class="nc bnc" id="L316" title="All 2 branches missed.">            if (this.completed &gt;= this.goal * 100)</span>
+<span class="nc" id="L317">                this.changelevel();</span>
+<span class="nc" id="L318">        }</span>
+
+        else{
+<span class="nc" id="L321">            this.gameResult();</span>
+        }
+
+        // Resetting the timer every 30 seconds
+<span class="nc bnc" id="L325" title="All 2 branches missed.">        if (this.timer &gt;= 30*FPS){</span>
+<span class="nc" id="L326">            this.timer =0;</span>
+        }
+        
+        // Information Bar
+<span class="nc" id="L330">        this.informationBar();</span>
+<span class="nc" id="L331">    }</span>
+    
+    /**
+    * Checks which key the player pressed and the movement of the ball is adjusted accordingly
+    */
+    public void keyPressed() {
+        // Left: 37
+        // Up: 38
+        // Right: 39
+        // Down: 40
+<span class="nc bnc" id="L341" title="All 2 branches missed.">        if (this.keyPressed){</span>
+<span class="nc bnc" id="L342" title="All 2 branches missed.">            if (this.keyCode == 37) {</span>
+<span class="nc" id="L343">                this.ball.pressLeft();</span>
+<span class="nc bnc" id="L344" title="All 2 branches missed.">            } else if (this.keyCode == 39) {</span>
+<span class="nc" id="L345">                this.ball.pressRight();</span>
+<span class="nc bnc" id="L346" title="All 2 branches missed.">            } else if (this.keyCode == 38) {</span>
+<span class="nc" id="L347">                this.ball.pressUp();</span>
+<span class="nc bnc" id="L348" title="All 2 branches missed.">            } else if (this.keyCode == 40) {</span>
+<span class="nc" id="L349">                this.ball.pressDown();</span>
+            }
+        }
+<span class="nc" id="L352">    }</span>
+
+    /**
+     * The map elements such as grass, concrete, green trail, red trail and powerups are drawn here on the window
+     * “X” = concrete
+     * “O” = Green Trail
+     * “R” = Red Trail
+     * “G” = Grass
+     * “P1” = Power Up 1
+     * “P2” = Power Up 2
+     * @return the numerator and denominator for area covered
+     */
+    public double[] mapDraw(){
+        // Initializing the numerator and denominator for percentage of area covered
+<span class="fc" id="L366">        double denominator = 2048;</span>
+<span class="fc" id="L367">        double numerator = 0;</span>
+<span class="fc bfc" id="L368" title="All 2 branches covered.">        for (int y = 0; y&lt;map.length; y++){</span>
+<span class="fc bfc" id="L369" title="All 2 branches covered.">            for (int x = 0; x&lt;map[y].length; x++){</span>
+<span class="fc bfc" id="L370" title="All 2 branches covered.">                if (map[y][x] == &quot;X&quot;){</span>
+<span class="fc" id="L371">                    image(this.concrete, x * SPRITESIZE, (y * SPRITESIZE) + TOPBAR);</span>
+<span class="fc" id="L372">                    denominator--;</span>
+                }
+<span class="fc bfc" id="L374" title="All 2 branches covered.">                else if (map[y][x] == &quot;O&quot;){</span>
+<span class="pc bpc" id="L375" title="1 of 2 branches missed.">                    if (this.clearPath){</span>
+<span class="fc" id="L376">                        map[y][x] = &quot;G&quot;;</span>
+                    }
+<span class="nc bnc" id="L378" title="All 2 branches missed.">                    else if (this.clearPathDead){</span>
+<span class="nc" id="L379">                        map[y][x] = null;</span>
+                    }
+<span class="fc" id="L381">                    image(this.pathGreen, x * SPRITESIZE, (y * SPRITESIZE) + TOPBAR);</span>
+                }
+<span class="fc bfc" id="L383" title="All 2 branches covered.">                else if (map[y][x] == &quot;R&quot;){</span>
+<span class="pc bpc" id="L384" title="1 of 2 branches missed.">                    if (this.clearPath){</span>
+<span class="fc" id="L385">                        map[y][x] = &quot;G&quot;;</span>
+                    }
+<span class="nc bnc" id="L387" title="All 2 branches missed.">                    else if (this.clearPathDead){</span>
+<span class="nc" id="L388">                        map[y][x] = null;</span>
+                    }
+<span class="fc" id="L390">                    image(this.pathRed, x * SPRITESIZE, (y * SPRITESIZE) + TOPBAR);</span>
+                }
+<span class="fc bfc" id="L392" title="All 2 branches covered.">                else if (map[y][x] == &quot;P1&quot;){</span>
+<span class="pc bpc" id="L393" title="1 of 4 branches missed.">                    if (!this.powerup1Enabled || powerup1Actived){</span>
+<span class="fc" id="L394">                        map[y][x] = null;</span>
+                    }
+<span class="fc" id="L396">                    image(this.powerup1, x * SPRITESIZE, (y * SPRITESIZE) + TOPBAR);</span>
+                }
+<span class="fc bfc" id="L398" title="All 2 branches covered.">                else if (map[y][x] == &quot;P2&quot;){</span>
+<span class="pc bpc" id="L399" title="1 of 4 branches missed.">                    if (!this.powerup2Enabled || powerup2Actived){</span>
+<span class="fc" id="L400">                        map[y][x] = null;</span>
+                    }
+<span class="fc" id="L402">                    image(this.powerup2, x * SPRITESIZE, (y * SPRITESIZE) + TOPBAR);</span>
+                }
+<span class="fc bfc" id="L404" title="All 2 branches covered.">                if (map[y][x] == &quot;G&quot;){</span>
+<span class="fc" id="L405">                    image(this.grass, x * SPRITESIZE, (y * SPRITESIZE) + TOPBAR);</span>
+<span class="fc" id="L406">                    numerator++;</span>
+                }
+            }
+        }
+<span class="fc" id="L410">        double[] xy = {numerator,denominator};</span>
+<span class="fc" id="L411">        return xy;</span>
+    }
+
+    /**
+     * This function decreases the lives of the player and resets the ball position
+     */
+    public void dead(){
+<span class="fc" id="L418">        this.lives--;</span>
+<span class="fc" id="L419">        this.ball.restartBall();</span>
+<span class="fc" id="L420">        this.clearPathDead = true;</span>
+<span class="fc" id="L421">        this.ball.timer =0;</span>
+<span class="fc" id="L422">        this.changeTile = false;</span>
+<span class="fc" id="L423">        this.changeTileIndex = 0;</span>
+<span class="fc" id="L424">        this.greenTrailList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L425">    }</span>
+
+    /**
+     * The information bar is created here. All text at the top is written here.
+     * @return if no issues occurred
+     */
+    public boolean informationBar(){
+        try{
+<span class="fc" id="L433">            textFont(font, 35);</span>
+<span class="pc bpc" id="L434" title="1 of 2 branches missed.">            if (powerup1Actived){</span>
+<span class="nc" id="L435">                fill(182,33,45);</span>
+<span class="nc" id="L436">                text(&quot;Powerup: &quot; + str(powerup1Timer/FPS) + &quot;s&quot;,450, 40);</span>
+            }
+<span class="fc" id="L438">            fill(255,255,255);</span>
+<span class="fc" id="L439">            text(&quot;Lives: &quot; + str(this.lives), 230, 41);</span>
+<span class="fc" id="L440">            text(str((int)(this.completed)) + &quot;% / &quot; + str((int) (this.goal*100)) + &quot;%&quot;, 800, 41);</span>
+<span class="fc" id="L441">            textFont(font, 25);</span>
+<span class="fc" id="L442">            text(&quot;Level &quot; + str(this.levelIndex + 1), 1180, 70);</span>
+<span class="fc" id="L443">            return true;</span>
+        }
+<span class="nc" id="L445">        catch(Exception e){</span>
+<span class="nc" id="L446">            return false;</span>
+        }
+    }
+
+    /**
+     * The final result text is shown with this function.
+     * The player wins if they complete the levels
+     * The player loses if it has no lives left.
+     * @return true if the player wins false otherwise
+     */
+    public boolean gameResult(){
+        // If the player wins the game
+<span class="pc bpc" id="L458" title="1 of 2 branches missed.">        if (levelIndex == this.noofLevels){</span>
+<span class="fc" id="L459">            textFont(font, 100);</span>
+<span class="fc" id="L460">            fill(0,200,0);</span>
+<span class="fc" id="L461">            text(&quot;You Win&quot;, 450, 375);</span>
+<span class="fc" id="L462">            return true;</span>
+        }
+        // If the player loses the game
+        else{
+<span class="nc" id="L466">            textFont(font, 100);</span>
+<span class="nc" id="L467">            fill(200,0,0);</span>
+<span class="nc" id="L468">            text(&quot;Game Over&quot;, 400, 375);</span>
+        }
+<span class="nc" id="L470">        return false;</span>
+    }
+
+    /**
+     * Powerup 1 logic. 
+     * This powerup spawns after 10 seconds into the game and is on the map for 10 seconds
+     * When collected the effect stays for 10 secinds.
+     * The timer of these are called here.
+     */
+    public void powerup1(){
+<span class="pc bpc" id="L480" title="1 of 4 branches missed.">        if (this.timer &gt;= 10*FPS &amp;&amp; this.timer&lt;=20*FPS){</span>
+<span class="fc bfc" id="L481" title="All 2 branches covered.">            if (!this.powerup1Enabled){</span>
+<span class="fc" id="L482">                int[] therandomlocations = this.pickRandomLocation();</span>
+<span class="fc" id="L483">                int x = therandomlocations[0];</span>
+<span class="fc" id="L484">                int y = therandomlocations[1];</span>
+<span class="fc" id="L485">                map[(y-TOPBAR)/20][x/20] = &quot;P1&quot;;</span>
+<span class="fc" id="L486">                this.powerup1Enabled = true;</span>
+            }
+<span class="fc bfc" id="L488" title="All 2 branches covered.">            if (map[(this.ball.getY() - TOPBAR) / SPRITESIZE][this.ball.getX()/SPRITESIZE] == &quot;P1&quot;){</span>
+<span class="fc" id="L489">                powerup1Actived = true;</span>
+            }
+        }
+<span class="fc bfc" id="L492" title="All 2 branches covered.">        else if (!powerup1Actived){</span>
+<span class="fc" id="L493">            this.powerup1Enabled = false;</span>
+        }
+
+<span class="fc bfc" id="L496" title="All 2 branches covered.">        if (powerup1Actived){</span>
+<span class="pc bpc" id="L497" title="1 of 2 branches missed.">            if (powerup1Timer == 0){</span>
+<span class="nc" id="L498">                powerup1Timer = 10*App.FPS;</span>
+<span class="nc" id="L499">                powerup1Actived = false;</span>
+            }
+<span class="fc" id="L501">            powerup1Timer--;</span>
+        }
+<span class="fc" id="L503">    }</span>
+
+    /**
+     * The function changes the green trail tiles in the map to red from where the enemy touched it
+     */
+    public void changetilefromgreentored(){
+<span class="pc bpc" id="L509" title="1 of 2 branches missed.">        if (this.changeTile){</span>
+<span class="pc bpc" id="L510" title="2 of 4 branches missed.">            if (this.timer % 3 == 0 &amp;&amp; this.greenTrailList.size() != 0){</span>
+<span class="fc" id="L511">                map[this.greenTrailList.get(this.changeTileIndex)[1]][this.greenTrailList.get(this.changeTileIndex)[0]] = &quot;R&quot;; // Bug</span>
+<span class="fc" id="L512">                this.changeTileIndex++;</span>
+<span class="pc bpc" id="L513" title="1 of 2 branches missed.">                if (this.changeTileIndex == this.greenTrailList.size()){</span>
+<span class="fc" id="L514">                    this.dead();</span>
+                }
+            }
+
+        }
+<span class="fc" id="L519">    }</span>
+
+    /**
+     * Powerup 2 logic. 
+     * This powerup spawns after 15 seconds into the game and is on the map for 10 seconds
+     * If red tiles are present they are changed to green tiles.
+     */
+    public void powerup2(){
+<span class="pc bpc" id="L527" title="1 of 4 branches missed.">        if (this.timer &gt;= 15*FPS &amp;&amp; this.timer&lt;=30*FPS){</span>
+<span class="fc bfc" id="L528" title="All 2 branches covered.">            if (!this.powerup2Enabled){</span>
+<span class="fc" id="L529">                int[] therandomlocations = this.pickRandomLocation();</span>
+<span class="fc" id="L530">                int x = therandomlocations[0];</span>
+<span class="fc" id="L531">                int y = therandomlocations[1];</span>
+<span class="fc" id="L532">                map[(y-TOPBAR)/20][x/20] = &quot;P2&quot;;</span>
+<span class="fc" id="L533">                this.powerup2Enabled = true;</span>
+            }
+<span class="fc bfc" id="L535" title="All 2 branches covered.">            if (map[(this.ball.getY() - TOPBAR) / SPRITESIZE][this.ball.getX()/SPRITESIZE] == &quot;P2&quot;){</span>
+<span class="fc" id="L536">                powerup2Actived = true;</span>
+<span class="fc" id="L537">                this.changeTile = false;</span>
+<span class="fc" id="L538">                this.changeTileIndex = 0;</span>
+<span class="pc bpc" id="L539" title="1 of 2 branches missed.">                for (int k = 0; k&lt;this.greenTrailList.size(); k++){</span>
+<span class="nc" id="L540">                    map[this.greenTrailList.get(k)[1]][this.greenTrailList.get(k)[0]] = &quot;O&quot;;</span>
+                }
+            }
+        }
+<span class="fc bfc" id="L544" title="All 2 branches covered.">        else if (!powerup2Actived){</span>
+<span class="fc" id="L545">            this.powerup2Enabled = false;</span>
+        }
+
+<span class="fc bfc" id="L548" title="All 2 branches covered.">        if (powerup2Actived){</span>
+<span class="pc bpc" id="L549" title="1 of 2 branches missed.">            if (powerup2Timer == 0){</span>
+<span class="nc" id="L550">                powerup2Timer = 10*App.FPS;</span>
+<span class="nc" id="L551">                powerup2Actived = false;</span>
+            }
+<span class="fc" id="L553">            powerup2Timer--;</span>
+        }
+<span class="fc" id="L555">    }</span>
+
+    /**
+     * The level Index is increased and checks if there are more levels.
+     * If there are more levels, the game file of the next level is read and the game is resetted accordingly.
+     */
+    public void changelevel(){
+<span class="fc" id="L562">        this.completed = 0;</span>
+<span class="fc" id="L563">        this.levelIndex++;</span>
+<span class="pc bpc" id="L564" title="1 of 2 branches missed.">        if (this.levelIndex &lt; this.noofLevels){</span>
+<span class="fc" id="L565">            this.enemies = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L566">            this.greenTrailList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L567">            this.ball.restartBall();</span>
+<span class="fc" id="L568">            map = new String[32][64];</span>
+<span class="fc" id="L569">            this.timer = 0;</span>
+<span class="fc" id="L570">            this.readFile();</span>
+        }
+<span class="fc" id="L572">    }</span>
+
+    /**
+     * A random location on the map is selected (which is empty)
+     * @return the random empty location on the map
+    */
+    public int[] pickRandomLocation(){
+<span class="fc" id="L579">        Random rand = new Random();</span>
+<span class="fc" id="L580">        int x = rand.nextInt(WIDTH- (4*SPRITESIZE)) + (2*SPRITESIZE);</span>
+<span class="fc" id="L581">        int y = rand.nextInt(HEIGHT-(4*SPRITESIZE)-TOPBAR) + (2*SPRITESIZE) + TOPBAR;</span>
+<span class="pc bpc" id="L582" title="1 of 2 branches missed.">        while (map[(y - TOPBAR)/20][x/20] != null){</span>
+<span class="nc" id="L583">            x = rand.nextInt(WIDTH- (4*SPRITESIZE)) + (2*SPRITESIZE);</span>
+<span class="nc" id="L584">            y = rand.nextInt(HEIGHT-(4*SPRITESIZE)-TOPBAR) + (2*SPRITESIZE) + TOPBAR;</span>
+        }
+<span class="fc" id="L586">        int[] therandomlocations = {x,y};</span>
+<span class="fc" id="L587">        return therandomlocations;</span>
+    }
+
+    /**
+     * This function is used for the floodfill
+     * The map is cloned and flood filled the regions from the nemies positions with a placeholder
+     * The null position in the map is filled and the placeholder is replaced with null (empty space)
+    */
+    public void changingMapforFill(){
+<span class="fc" id="L596">        mapNew = new String[32][64];</span>
+<span class="fc" id="L597">        mapNew = map.clone();</span>
+
+<span class="fc bfc" id="L599" title="All 2 branches covered.">        for (int i = 0; i&lt;this.enemies.size(); i++){</span>
+<span class="fc" id="L600">            this.floodFill(mapNew, this.enemies.get(i).getX()/20, (this.enemies.get(i).getY()-TOPBAR)/20);</span>
+        }
+
+        // Converting the placeholder into null and null to grass
+<span class="fc bfc" id="L604" title="All 2 branches covered.">        for (int i = 0; i&lt;map.length; i++){</span>
+<span class="fc bfc" id="L605" title="All 2 branches covered.">            for (int j = 0; j&lt;map[i].length; j++){</span>
+<span class="pc bpc" id="L606" title="3 of 6 branches missed.">                if (mapNew[i][j] == null || mapNew[i][j] == &quot;P1&quot;|| mapNew[i][j] == &quot;P2&quot;){</span>
+<span class="nc" id="L607">                    mapNew[i][j] = &quot;G&quot;;</span>
+                }
+<span class="fc bfc" id="L609" title="All 2 branches covered.">                else if (mapNew[i][j] == &quot;IN&quot;){</span>
+<span class="fc" id="L610">                    mapNew[i][j] = null;</span>
+                }
+<span class="pc bpc" id="L612" title="1 of 2 branches missed.">                else if (mapNew[i][j] == &quot;P11&quot;){</span>
+<span class="nc" id="L613">                    mapNew[i][j] = &quot;P1&quot;;</span>
+                }
+<span class="pc bpc" id="L615" title="1 of 2 branches missed.">                else if (mapNew[i][j] == &quot;P22&quot;){</span>
+<span class="nc" id="L616">                    mapNew[i][j] = &quot;P2&quot;;</span>
+                }
+                
+            }
+        }
+<span class="fc" id="L621">        map = mapNew.clone();</span>
+<span class="fc" id="L622">    }</span>
+
+    /**
+     * This is the function to call the dfs recursive function for floodfill.
+     * This method is taken from a youtube video tutorial
+     * @param grid is the map
+     * @param x the x coordinate of the starting position of the floodfill
+     * @param y the y coordinate of the starting position of the floodfill
+    */
+    public void floodFill(String[][]grid, int x, int y){
+<span class="fc bfc" id="L632" title="All 2 branches covered.">        if (grid[y][x] == &quot;IN&quot;){</span>
+<span class="fc" id="L633">            return;</span>
+        }
+<span class="fc" id="L635">        dfs(grid, x, y);</span>
+<span class="fc" id="L636">    }</span>
+
+    /**
+     * The dfs fucntion which fill all regions in all four directions from the given input
+     * @param grid is the map
+     * @param x the x coordinate of the starting position of the floodfill dfs
+     * @param y the y coordinate of the starting position of the floodfill dfs
+    */
+    public void dfs(String[][]grid, int x, int y){
+<span class="fc" id="L645">        int n = grid.length;</span>
+<span class="fc" id="L646">        int m = grid[0].length;</span>
+<span class="pc bpc" id="L647" title="1 of 2 branches missed.">        if (grid[y][x] == &quot;P1&quot;){</span>
+<span class="nc" id="L648">            grid[y][x] = &quot;P11&quot;;</span>
+<span class="nc" id="L649">            return;</span>
+        }
+<span class="pc bpc" id="L651" title="1 of 2 branches missed.">        if (grid[y][x] == &quot;P2&quot;){</span>
+<span class="nc" id="L652">            grid[y][x] = &quot;P22&quot;;</span>
+<span class="nc" id="L653">            return;</span>
+        }
+<span class="pc bpc" id="L655" title="4 of 10 branches missed.">        if (x&lt;0 || y&gt;=n || y&lt;0 || x&gt;=m || grid[y][x] != null){</span>
+<span class="fc" id="L656">            return;</span>
+        }
+<span class="fc" id="L658">        grid[y][x] = &quot;IN&quot;;</span>
+<span class="fc" id="L659">        dfs(grid, x+1, y);</span>
+<span class="fc" id="L660">        dfs(grid, x-1, y);</span>
+<span class="fc" id="L661">        dfs(grid, x, y+1);</span>
+<span class="fc" id="L662">        dfs(grid, x, y-1);</span>
+<span class="fc" id="L663">    }</span>
+
+    public static void main(String[] args) {
+<span class="nc" id="L666">        PApplet.main(&quot;lawnlayer.App&quot;);</span>
+<span class="nc" id="L667">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

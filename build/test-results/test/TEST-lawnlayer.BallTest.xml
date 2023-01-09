@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="lawnlayer.BallTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2022-09-27T11:22:07" hostname="Noes-MacBook-Air.local" time="2.115">
+  <properties/>
+  <testcase name="constructor()" classname="lawnlayer.BallTest" time="0.001"/>
+  <testcase name="restartBallTest()" classname="lawnlayer.BallTest" time="0.0"/>
+  <testcase name="pressRightTest()" classname="lawnlayer.BallTest" time="0.0"/>
+  <testcase name="startingPositionOfBall()" classname="lawnlayer.BallTest" time="0.0"/>
+  <testcase name="pressDownTest()" classname="lawnlayer.BallTest" time="0.0"/>
+  <testcase name="onConcreteTest()" classname="lawnlayer.BallTest" time="0.0"/>
+  <testcase name="pressLeftTest()" classname="lawnlayer.BallTest" time="0.0"/>
+  <testcase name="spriteTest()" classname="lawnlayer.BallTest" time="1.047"/>
+  <testcase name="BallStstaysonGridTest()" classname="lawnlayer.BallTest" time="0.001"/>
+  <testcase name="pressUpTest()" classname="lawnlayer.BallTest" time="0.0"/>
+  <testcase name="onConcretefunctionTest()" classname="lawnlayer.BallTest" time="1.063"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[java.lang.NullPointerException
+	at processing.core.PGraphics.image(PGraphics.java:3770)
+	at processing.core.PApplet.image(PApplet.java:12611)
+	at lawnlayer.Sprite.draw(Sprite.java:36)
+	at lawnlayer.App.draw(App.java:301)
+	at processing.core.PApplet.handleDraw(PApplet.java:2426)
+	at processing.awt.PSurfaceAWT$12.callDraw(PSurfaceAWT.java:1557)
+	at processing.core.PSurfaceNone$AnimationThread.run(PSurfaceNone.java:316)
+java.lang.NullPointerException
+	at processing.core.PGraphics.image(PGraphics.java:3770)
+	at processing.core.PApplet.image(PApplet.java:12611)
+	at lawnlayer.Sprite.draw(Sprite.java:36)
+	at lawnlayer.App.draw(App.java:301)
+	at processing.core.PApplet.handleDraw(PApplet.java:2426)
+	at processing.awt.PSurfaceAWT$12.callDraw(PSurfaceAWT.java:1557)
+	at processing.core.PSurfaceNone$AnimationThread.run(PSurfaceNone.java:316)
+]]></system-err>
+</testsuite>

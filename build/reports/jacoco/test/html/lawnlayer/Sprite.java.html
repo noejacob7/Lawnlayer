@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Sprite.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">lawnlayer</a> &gt; <a href="index.source.html" class="el_package">lawnlayer</a> &gt; <span class="el_source">Sprite.java</span></div><h1>Sprite.java</h1><pre class="source lang-java linenums">package lawnlayer;
+
+import processing.core.PApplet;
+import processing.core.PImage;
+
+import java.util.*;
+
+public abstract class Sprite {
+
+    protected int x;
+    protected int y;
+
+<span class="fc" id="L13">    protected int xVel = 2;</span>
+<span class="fc" id="L14">    protected int yVel = 2;</span>
+
+<span class="fc" id="L16">    protected final int VELOCITY = 2;</span>
+
+    public PImage sprite;
+
+<span class="fc" id="L20">    public Sprite(int x, int y){</span>
+<span class="fc" id="L21">        this.x = x;</span>
+<span class="fc" id="L22">        this.y = y;</span>
+<span class="fc" id="L23">    }</span>
+
+    public void setSprite(PImage sprite) {
+<span class="fc" id="L26">        this.sprite = sprite;</span>
+<span class="fc" id="L27">    }</span>
+
+    /**
+     * All the logic is written in this function
+    */
+    public abstract void tick();
+
+
+    public void draw(PApplet app) {
+<span class="fc" id="L36">        app.image(this.sprite, this.x, this.y);</span>
+<span class="fc" id="L37">    }</span>
+
+    public int getX() {
+<span class="fc" id="L40">        return this.x;</span>
+    }
+
+    public int getY() {
+<span class="fc" id="L44">        return this.y;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

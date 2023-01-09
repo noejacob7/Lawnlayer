@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="lawnlayer.EnemiesTest" tests="1" skipped="1" failures="0" errors="0" timestamp="2022-09-27T11:22:10" hostname="Noes-MacBook-Air.local" time="0.905">
+  <properties/>
+  <testcase name="movementTest()" classname="lawnlayer.EnemiesTest" time="0.905">
+    <skipped/>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[java.lang.NullPointerException
+	at processing.core.PGraphics.image(PGraphics.java:3770)
+	at processing.core.PApplet.image(PApplet.java:12611)
+	at lawnlayer.Sprite.draw(Sprite.java:36)
+	at lawnlayer.App.draw(App.java:301)
+	at processing.core.PApplet.handleDraw(PApplet.java:2426)
+	at processing.awt.PSurfaceAWT$12.callDraw(PSurfaceAWT.java:1557)
+	at processing.core.PSurfaceNone$AnimationThread.run(PSurfaceNone.java:316)
+]]></system-err>
+</testsuite>

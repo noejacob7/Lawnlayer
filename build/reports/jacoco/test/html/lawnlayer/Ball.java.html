@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Ball.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">lawnlayer</a> &gt; <a href="index.source.html" class="el_package">lawnlayer</a> &gt; <span class="el_source">Ball.java</span></div><h1>Ball.java</h1><pre class="source lang-java linenums">package lawnlayer;
+
+import processing.core.PApplet;
+import processing.core.PImage;
+import java.util.*;
+
+public class Ball extends Sprite {
+
+    public boolean moveLeft;
+    private boolean moveRight;
+    private boolean moveUp;
+    private boolean moveDown;
+    public int timer;
+
+    /**
+     * True if the ball is on the concrete
+    */
+    public boolean onConcrete;
+
+    // public char[][] pathGreen;
+
+    public Ball(){
+<span class="fc" id="L23">        super(0, App.TOPBAR);</span>
+<span class="fc" id="L24">        this.moveLeft = false;</span>
+<span class="fc" id="L25">        this.moveRight = false;</span>
+<span class="fc" id="L26">        this.moveUp = false;</span>
+<span class="fc" id="L27">        this.moveDown = false;</span>
+<span class="fc" id="L28">        this.timer = 0;</span>
+<span class="fc" id="L29">        this.onConcrete = false;</span>
+        // this.pathGreen = new char[31][63];
+<span class="fc" id="L31">    }</span>
+
+
+    /**
+     * The ball movement is calculated in this function.
+     * Make sure that the ball stays on the map and the ball does not move continuously on the concrete.
+    */
+    public void tick(){
+
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        if (this.timer == 0) {</span>
+
+            // if (this.y&lt;=App.TOPBAR || this.y&gt;=App.HEIGHT - App.SPRITESIZE || this.x&lt;= 0 || this.x &gt;= App.WIDTH - App.SPRITESIZE){
+            //     this.xVel = 0;
+            //     this.yVel = 0;
+            // }
+
+<span class="fc bfc" id="L47" title="All 2 branches covered.">            if (this.onConcrete){</span>
+<span class="fc" id="L48">                this.xVel = 0;</span>
+<span class="fc" id="L49">                this.yVel = 0;</span>
+            }
+
+<span class="fc bfc" id="L52" title="All 2 branches covered.">            if (moveDown){</span>
+<span class="fc" id="L53">                this.moveDown = false;</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">                if (this.yVel == 0){</span>
+<span class="fc" id="L55">                    this.yVel = VELOCITY;</span>
+<span class="fc" id="L56">                    this.xVel = 0;</span>
+                }
+            }
+<span class="fc bfc" id="L59" title="All 2 branches covered.">            if (moveUp){</span>
+<span class="fc" id="L60">                this.moveUp = false;</span>
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">                if (this.yVel == 0){</span>
+<span class="fc" id="L62">                    this.yVel = -VELOCITY;</span>
+<span class="fc" id="L63">                    this.xVel = 0;</span>
+                }
+            }
+<span class="fc bfc" id="L66" title="All 2 branches covered.">            if (moveRight){</span>
+<span class="fc" id="L67">                this.moveRight = false;</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">                if (this.xVel == 0){</span>
+<span class="fc" id="L69">                    this.xVel = VELOCITY;</span>
+<span class="fc" id="L70">                    this.yVel = 0;</span>
+                }
+            }
+<span class="fc bfc" id="L73" title="All 2 branches covered.">            if (moveLeft){</span>
+<span class="fc" id="L74">                this.moveLeft = false;</span>
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">                if (this.xVel == 0){</span>
+<span class="fc" id="L76">                    this.xVel = -VELOCITY;</span>
+<span class="fc" id="L77">                    this.yVel = 0;</span>
+                }
+            }
+<span class="fc" id="L80">            this.timer = 10;</span>
+        }
+
+<span class="fc" id="L83">        this.x += xVel;</span>
+<span class="fc" id="L84">        this.y += yVel;</span>
+
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">        if (this.timer &lt;=10){</span>
+<span class="fc" id="L87">            this.timer--;</span>
+        }
+
+        // Make sure the ball stays in the grid
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        if (this.x &lt;= 0){</span>
+<span class="fc" id="L92">            this.x = 0;</span>
+        }
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        if (this.x &gt;= App.WIDTH - App.SPRITESIZE){</span>
+<span class="fc" id="L95">            this.x = App.WIDTH - App.SPRITESIZE;</span>
+        }
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        if (this.y &lt;= App.TOPBAR){</span>
+<span class="fc" id="L98">            this.y = App.TOPBAR;</span>
+            
+        }
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        if (this.y &gt;= App.HEIGHT - App.SPRITESIZE){</span>
+<span class="fc" id="L102">            this.y = App.HEIGHT - App.SPRITESIZE;</span>
+        }
+
+<span class="fc" id="L105">    }</span>
+
+    public void pressLeft(){
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">        if (this.moveRight != true)</span>
+<span class="fc" id="L109">        this.moveLeft = true;</span>
+<span class="fc" id="L110">    }</span>
+
+    public void pressRight(){
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">        if (this.moveLeft != true)</span>
+<span class="fc" id="L114">        this.moveRight = true;</span>
+<span class="fc" id="L115">    }</span>
+
+    public void pressUp(){
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">        if (this.moveDown != true)</span>
+<span class="fc" id="L119">        this.moveUp = true;</span>
+<span class="fc" id="L120">    }</span>
+
+    public void pressDown(){
+<span class="pc bpc" id="L123" title="1 of 2 branches missed.">        if (this.moveUp != true)</span>
+<span class="fc" id="L124">        this.moveDown = true;</span>
+<span class="fc" id="L125">    }</span>
+
+    /**
+     * Checks whether the ball is on the concrete
+    */
+    public void isConcrete(){
+<span class="fc" id="L131">        this.onConcrete = false;</span>
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">        if (App.map[(this.getY()-App.TOPBAR)/20 ][this.getX()/20] == &quot;X&quot;){</span>
+<span class="fc" id="L133">            this.onConcrete = true;</span>
+        }
+<span class="fc" id="L135">    }</span>
+
+    /**
+     * Sets the ball into its starting position.
+    */
+    public void restartBall(){
+<span class="fc" id="L141">        this.x = 0;</span>
+<span class="fc" id="L142">        this.y = App.TOPBAR;</span>
+<span class="fc" id="L143">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

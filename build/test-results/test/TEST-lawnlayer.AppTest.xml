@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="lawnlayer.AppTest" tests="16" skipped="0" failures="0" errors="0" timestamp="2022-09-27T11:21:48" hostname="Noes-MacBook-Air.local" time="19.501">
+  <properties/>
+  <testcase name="floodFillTest()" classname="lawnlayer.AppTest" time="4.334"/>
+  <testcase name="constructor()" classname="lawnlayer.AppTest" time="0.002"/>
+  <testcase name="imagesTest()" classname="lawnlayer.AppTest" time="1.127"/>
+  <testcase name="informationbarTest()" classname="lawnlayer.AppTest" time="1.125"/>
+  <testcase name="drawtest()" classname="lawnlayer.AppTest" time="1.066"/>
+  <testcase name="drawingtest()" classname="lawnlayer.AppTest" time="1.054"/>
+  <testcase name="greentrailtest()" classname="lawnlayer.AppTest" time="1.064"/>
+  <testcase name="deadTest()" classname="lawnlayer.AppTest" time="1.099"/>
+  <testcase name="settingsTest()" classname="lawnlayer.AppTest" time="1.078"/>
+  <testcase name="gameresultTest()" classname="lawnlayer.AppTest" time="1.125"/>
+  <testcase name="powerup1Test()" classname="lawnlayer.AppTest" time="1.051"/>
+  <testcase name="powerup2Test()" classname="lawnlayer.AppTest" time="1.039"/>
+  <testcase name="mapTest()" classname="lawnlayer.AppTest" time="1.051"/>
+  <testcase name="changetilefromgreemtoredtest()" classname="lawnlayer.AppTest" time="1.074"/>
+  <testcase name="nextlevelcheck()" classname="lawnlayer.AppTest" time="1.078"/>
+  <testcase name="changeTileTest()" classname="lawnlayer.AppTest" time="1.052"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[java.lang.NullPointerException
+	at processing.core.PGraphics.image(PGraphics.java:3770)
+	at processing.core.PApplet.image(PApplet.java:12611)
+	at lawnlayer.Sprite.draw(Sprite.java:36)
+	at lawnlayer.App.draw(App.java:301)
+	at processing.core.PApplet.handleDraw(PApplet.java:2426)
+	at processing.awt.PSurfaceAWT$12.callDraw(PSurfaceAWT.java:1557)
+	at processing.core.PSurfaceNone$AnimationThread.run(PSurfaceNone.java:316)
+java.lang.NullPointerException
+	at processing.core.PGraphics.image(PGraphics.java:3770)
+	at processing.core.PApplet.image(PApplet.java:12611)
+	at lawnlayer.Sprite.draw(Sprite.java:36)
+	at lawnlayer.App.draw(App.java:301)
+	at processing.core.PApplet.handleDraw(PApplet.java:2426)
+	at processing.awt.PSurfaceAWT$12.callDraw(PSurfaceAWT.java:1557)
+	at processing.core.PSurfaceNone$AnimationThread.run(PSurfaceNone.java:316)
+java.lang.NullPointerException
+	at processing.core.PGraphics.image(PGraphics.java:3770)
+	at processing.core.PApplet.image(PApplet.java:12611)
+	at lawnlayer.Sprite.draw(Sprite.java:36)
+	at lawnlayer.App.draw(App.java:301)
+	at processing.core.PApplet.handleDraw(PApplet.java:2426)
+	at processing.awt.PSurfaceAWT$12.callDraw(PSurfaceAWT.java:1557)
+	at processing.core.PSurfaceNone$AnimationThread.run(PSurfaceNone.java:316)
+java.lang.NullPointerException
+	at processing.core.PGraphics.image(PGraphics.java:3770)
+	at processing.core.PApplet.image(PApplet.java:12611)
+	at lawnlayer.Sprite.draw(Sprite.java:36)
+	at lawnlayer.App.draw(App.java:301)
+	at processing.core.PApplet.handleDraw(PApplet.java:2426)
+	at processing.awt.PSurfaceAWT$12.callDraw(PSurfaceAWT.java:1557)
+	at processing.core.PSurfaceNone$AnimationThread.run(PSurfaceNone.java:316)
+java.lang.NullPointerException
+	at processing.core.PGraphics.image(PGraphics.java:3770)
+	at processing.core.PApplet.image(PApplet.java:12611)
+	at lawnlayer.Sprite.draw(Sprite.java:36)
+	at lawnlayer.App.draw(App.java:301)
+	at processing.core.PApplet.handleDraw(PApplet.java:2426)
+	at processing.awt.PSurfaceAWT$12.callDraw(PSurfaceAWT.java:1557)
+	at processing.core.PSurfaceNone$AnimationThread.run(PSurfaceNone.java:316)
+java.lang.NullPointerException
+	at processing.core.PGraphics.image(PGraphics.java:3770)
+	at processing.core.PApplet.image(PApplet.java:12611)
+	at lawnlayer.Sprite.draw(Sprite.java:36)
+	at lawnlayer.App.draw(App.java:301)
+	at processing.core.PApplet.handleDraw(PApplet.java:2426)
+	at processing.awt.PSurfaceAWT$12.callDraw(PSurfaceAWT.java:1557)
+	at processing.core.PSurfaceNone$AnimationThread.run(PSurfaceNone.java:316)
+java.lang.NullPointerException
+	at processing.core.PGraphics.image(PGraphics.java:3770)
+	at processing.core.PApplet.image(PApplet.java:12611)
+	at lawnlayer.Sprite.draw(Sprite.java:36)
+	at lawnlayer.App.draw(App.java:301)
+	at processing.core.PApplet.handleDraw(PApplet.java:2426)
+	at processing.awt.PSurfaceAWT$12.callDraw(PSurfaceAWT.java:1557)
+	at processing.core.PSurfaceNone$AnimationThread.run(PSurfaceNone.java:316)
+java.lang.NullPointerException
+	at processing.core.PGraphics.image(PGraphics.java:3770)
+	at processing.core.PApplet.image(PApplet.java:12611)
+	at lawnlayer.Sprite.draw(Sprite.java:36)
+	at lawnlayer.App.draw(App.java:301)
+	at processing.core.PApplet.handleDraw(PApplet.java:2426)
+	at processing.awt.PSurfaceAWT$12.callDraw(PSurfaceAWT.java:1557)
+	at processing.core.PSurfaceNone$AnimationThread.run(PSurfaceNone.java:316)
+java.lang.NullPointerException
+	at processing.core.PGraphics.image(PGraphics.java:3770)
+	at processing.core.PApplet.image(PApplet.java:12611)
+	at lawnlayer.Sprite.draw(Sprite.java:36)
+	at lawnlayer.App.draw(App.java:301)
+	at processing.core.PApplet.handleDraw(PApplet.java:2426)
+	at processing.awt.PSurfaceAWT$12.callDraw(PSurfaceAWT.java:1557)
+	at processing.core.PSurfaceNone$AnimationThread.run(PSurfaceNone.java:316)
+java.lang.NullPointerException
+	at processing.core.PGraphics.image(PGraphics.java:3770)
+	at processing.core.PApplet.image(PApplet.java:12611)
+	at lawnlayer.Sprite.draw(Sprite.java:36)
+	at lawnlayer.App.draw(App.java:301)
+	at processing.core.PApplet.handleDraw(PApplet.java:2426)
+	at processing.awt.PSurfaceAWT$12.callDraw(PSurfaceAWT.java:1557)
+	at processing.core.PSurfaceNone$AnimationThread.run(PSurfaceNone.java:316)
+java.lang.NullPointerException
+	at processing.core.PGraphics.image(PGraphics.java:3770)
+	at processing.core.PApplet.image(PApplet.java:12611)
+	at lawnlayer.Sprite.draw(Sprite.java:36)
+	at lawnlayer.App.draw(App.java:301)
+	at processing.core.PApplet.handleDraw(PApplet.java:2426)
+	at processing.awt.PSurfaceAWT$12.callDraw(PSurfaceAWT.java:1557)
+	at processing.core.PSurfaceNone$AnimationThread.run(PSurfaceNone.java:316)
+java.lang.NullPointerException
+	at processing.core.PGraphics.image(PGraphics.java:3770)
+	at processing.core.PApplet.image(PApplet.java:12611)
+	at lawnlayer.Sprite.draw(Sprite.java:36)
+	at lawnlayer.App.draw(App.java:301)
+	at processing.core.PApplet.handleDraw(PApplet.java:2426)
+	at processing.awt.PSurfaceAWT$12.callDraw(PSurfaceAWT.java:1557)
+	at processing.core.PSurfaceNone$AnimationThread.run(PSurfaceNone.java:316)
+java.lang.NullPointerException
+	at processing.core.PGraphics.image(PGraphics.java:3770)
+	at processing.core.PApplet.image(PApplet.java:12611)
+	at lawnlayer.Sprite.draw(Sprite.java:36)
+	at lawnlayer.App.draw(App.java:301)
+	at processing.core.PApplet.handleDraw(PApplet.java:2426)
+	at processing.awt.PSurfaceAWT$12.callDraw(PSurfaceAWT.java:1557)
+	at processing.core.PSurfaceNone$AnimationThread.run(PSurfaceNone.java:316)
+java.lang.NullPointerException
+	at processing.core.PGraphics.image(PGraphics.java:3770)
+	at processing.core.PApplet.image(PApplet.java:12611)
+	at lawnlayer.Sprite.draw(Sprite.java:36)
+	at lawnlayer.App.draw(App.java:301)
+	at processing.core.PApplet.handleDraw(PApplet.java:2426)
+	at processing.awt.PSurfaceAWT$12.callDraw(PSurfaceAWT.java:1557)
+	at processing.core.PSurfaceNone$AnimationThread.run(PSurfaceNone.java:316)
+java.lang.NullPointerException
+	at processing.core.PGraphics.image(PGraphics.java:3770)
+	at processing.core.PApplet.image(PApplet.java:12611)
+	at lawnlayer.Sprite.draw(Sprite.java:36)
+	at lawnlayer.App.draw(App.java:301)
+	at processing.core.PApplet.handleDraw(PApplet.java:2426)
+	at processing.awt.PSurfaceAWT$12.callDraw(PSurfaceAWT.java:1557)
+	at processing.core.PSurfaceNone$AnimationThread.run(PSurfaceNone.java:316)
+]]></system-err>
+</testsuite>
